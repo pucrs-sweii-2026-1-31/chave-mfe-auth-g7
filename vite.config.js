@@ -8,9 +8,9 @@ export default defineConfig({
     federation({
       name: "mfe_auth",
       filename: "remoteEntry.js",
-      // Componentes expostos para o Shell consumir
       exposes: {
         "./LoginPage": "./src/pages/LoginPage",
+        "./SignUpPage": "./src/pages/SignUpPage",
       },
       shared: ["react", "react-dom"],
     }),
