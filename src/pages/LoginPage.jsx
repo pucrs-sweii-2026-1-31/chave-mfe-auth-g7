@@ -1,18 +1,14 @@
-import { FC, FormEvent, useState } from "react";
-
-interface LoginPageProps {
-  onLogin?: (data: any) => void;
-}
+import { useState } from "react";
 
 const API = import.meta.env.VITE_MS_AUTH_URL || "http://localhost:3001";
 
-const LoginPage: FC<LoginPageProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+export default function LoginPage({ onLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -34,9 +30,7 @@ const LoginPage: FC<LoginPageProps> = ({ onLogin }) => {
       localStorage.setItem("refresh", data.refresh);
       onLogin?.(data);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      }
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -73,6 +67,4 @@ const LoginPage: FC<LoginPageProps> = ({ onLogin }) => {
       </form>
     </div>
   );
-};
-
-export default LoginPage;
+}

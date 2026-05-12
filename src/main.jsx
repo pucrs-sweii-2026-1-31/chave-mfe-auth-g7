@@ -4,23 +4,21 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 
 function App() {
-  const [page, setPage] = useState<"login" | "signup">("signup");
+  const [page, setPage] = useState("signup");
 
   if (page === "login") {
-    return (
-      <LoginPage onLogin={(data: any) => console.log("Logado:", data)} />
-    );
+    return <LoginPage onLogin={(data) => console.log("Logado:", data)} />;
   }
 
   return (
     <SignUpPage
-      onSignUp={(data: any) => console.log("Cadastrado:", data)}
+      onSignUp={(data) => console.log("Cadastrado:", data)}
       onGoToLogin={() => setPage("login")}
     />
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
