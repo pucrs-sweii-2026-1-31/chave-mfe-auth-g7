@@ -14,7 +14,11 @@ function App() {
 
   return (
     <SignUpPage
-      onSignUp={(data: any) => console.log("Cadastrado:", data)}
+      onSignUp={(data: any) => {
+          console.log("Cadastrado:", data);
+          setPage("login");
+        }
+      }
       onGoToLogin={() => setPage("login")}
     />
   );

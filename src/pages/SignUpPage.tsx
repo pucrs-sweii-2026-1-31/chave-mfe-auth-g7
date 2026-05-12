@@ -25,10 +25,11 @@ const API = import.meta.env.VITE_MS_AUTH_URL || "http://localhost:3001";
 
 interface ToastProps {
   message: string;
+  success: boolean;
   onClose: () => void;
 }
 
-const Toast: FC<ToastProps> = ({ message, onClose }) => {
+const Toast: FC<ToastProps> = ({ message, success, onClose }) => {
   return (
     <div
       style={{
@@ -36,7 +37,7 @@ const Toast: FC<ToastProps> = ({ message, onClose }) => {
         bottom: 24,
         left: "50%",
         transform: "translateX(-50%)",
-        background: "#d32f2f",
+        background: success ? "#35b810": "#d32f2f",
         color: "#fff",
         padding: "12px 24px",
         borderRadius: 8,
@@ -91,10 +92,10 @@ const SignUpPage: FC<SignUpPageProps> = ({ onSignUp, onGoToLogin }) => {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{message: string, success: boolean} | null>(null);
 
-  const showToast = (message: string): void => {
-    setToast(message);
+  const showToast = (message: string, success: boolean): void => {
+    setToast({message: message, success: success});
     setTimeout(() => setToast(null), 4000);
   };
 
@@ -132,25 +133,25 @@ const SignUpPage: FC<SignUpPageProps> = ({ onSignUp, onGoToLogin }) => {
     setLoading(true);
 
     if (new Date(form.birthday) > new Date()) {
-      showToast("Data de nascimento inválida");
+      showToast("Data de nascimento inválida", false);
       setLoading(false);
       return;
     }
 
     if (!isValidEmail(form.email)) {
-      showToast("E-mail inválido");
+      showToast("E-mail inválido", false);
       setLoading(false);
       return;
     }
 
     if (!allRulesOk) {
-      showToast("A senha não atende aos requisitos");
+      showToast("A senha não atende aos requisitos", false);
       setLoading(false);
       return;
     }
 
     if (!passwordsMatch) {
-      showToast("As senhas não coincidem");
+      showToast("As senhas não coincidem", false);
       setLoading(false);
       return;
     }
@@ -165,6 +166,7 @@ const SignUpPage: FC<SignUpPageProps> = ({ onSignUp, onGoToLogin }) => {
           gender: form.gender,
           email: form.email,
           password: form.password,
+          confirmationPassword: form.confirmPassword
         }),
       });
 
@@ -174,10 +176,13 @@ const SignUpPage: FC<SignUpPageProps> = ({ onSignUp, onGoToLogin }) => {
         throw new Error(data.error || data.message || "Erro ao criar conta");
       }
 
-      onSignUp?.(data);
+      showToast("Usuário criado com sucesso!", true);
+      setTimeout(() => {
+        onSignUp?.(data);
+      }, 1500);
     } catch (err) {
       if (err instanceof Error) {
-        showToast(err.message);
+        showToast(err.message, false);
       }
     } finally {
       setLoading(false);
@@ -388,7 +393,7 @@ const SignUpPage: FC<SignUpPageProps> = ({ onSignUp, onGoToLogin }) => {
         </p>
       )}
 
-      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} success={toast.success} onClose={() => setToast(null)} />}
     </div>
   );
 };
