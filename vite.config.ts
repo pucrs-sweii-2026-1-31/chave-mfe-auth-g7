@@ -9,8 +9,8 @@ export default defineConfig({
       name: "mfe_auth",
       filename: "remoteEntry.js",
       exposes: {
-        "./LoginPage": "./src/pages/LoginPage",
-        "./SignUpPage": "./src/pages/SignUpPage",
+        "./LoginPage": "./src/pages/LoginPage.tsx",
+        "./SignUpPage": "./src/pages/SignUpPage.tsx",
       },
       shared: ["react", "react-dom"],
     }),

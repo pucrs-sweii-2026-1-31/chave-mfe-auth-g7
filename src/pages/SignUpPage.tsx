@@ -1,8 +1,34 @@
-import { useState } from "react";
+import { FC, FormEvent, ChangeEvent, useState } from "react";
+
+interface SignUpPageProps {
+  onSignUp?: (data: any) => void;
+  onGoToLogin?: () => void;
+}
+
+interface FormData {
+  name: string;
+  birthday: string;
+  gender: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface PasswordRules {
+  length: boolean;
+  upper: boolean;
+  number: boolean;
+  special: boolean;
+}
 
 const API = import.meta.env.VITE_MS_AUTH_URL || "http://localhost:3001";
 
-function Toast({ message, onClose }) {
+interface ToastProps {
+  message: string;
+  onClose: () => void;
+}
+
+const Toast: FC<ToastProps> = ({ message, onClose }) => {
   return (
     <div
       style={{
@@ -40,18 +66,23 @@ function Toast({ message, onClose }) {
       </button>
     </div>
   );
+};
+
+interface PasswordRuleProps {
+  ok: boolean;
+  text: string;
 }
 
-function PasswordRule({ ok, text }) {
+const PasswordRule: FC<PasswordRuleProps> = ({ ok, text }) => {
   return (
     <p style={{ margin: "2px 0", fontSize: 12, color: ok ? "#2e7d32" : "#999" }}>
       {ok ? "✅" : "⬜"} {text}
     </p>
   );
-}
+};
 
-export default function SignUpPage({ onSignUp, onGoToLogin }) {
-  const [form, setForm] = useState({
+const SignUpPage: FC<SignUpPageProps> = ({ onSignUp, onGoToLogin }) => {
+  const [form, setForm] = useState<FormData>({
     name: "",
     birthday: "",
     gender: "",
@@ -59,19 +90,21 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
     password: "",
     confirmPassword: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [toast, setToast] = useState<string | null>(null);
 
-  const showToast = (message) => {
+  const showToast = (message: string): void => {
     setToast(message);
     setTimeout(() => setToast(null), 4000);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ): void => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const rules = {
+  const rules: PasswordRules = {
     length: form.password.length >= 10,
     upper: /[A-Z]/.test(form.password),
     number: /[0-9]/.test(form.password),
@@ -85,27 +118,29 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
 
   const allRulesOk = rules.length && rules.upper && rules.number && rules.special;
 
-  const isValidEmail = (email) => {
-    return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) &&
-        !email.startsWith(".") &&
-        !email.endsWith(".") &&
-        !email.includes("..");
-    };
+  const isValidEmail = (email: string): boolean => {
+    return (
+      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) &&
+      !email.startsWith(".") &&
+      !email.endsWith(".") &&
+      !email.includes("..")
+    );
+  };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setLoading(true);
 
     if (new Date(form.birthday) > new Date()) {
-        showToast("Data de nascimento inválida");
-        setLoading(false);
-        return;
+      showToast("Data de nascimento inválida");
+      setLoading(false);
+      return;
     }
 
     if (!isValidEmail(form.email)) {
-        showToast("E-mail inválido");
-        setLoading(false);
-        return;
+      showToast("E-mail inválido");
+      setLoading(false);
+      return;
     }
 
     if (!allRulesOk) {
@@ -141,13 +176,15 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
 
       onSignUp?.(data);
     } catch (err) {
-      showToast(err.message);
+      if (err instanceof Error) {
+        showToast(err.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "8px 10px",
     marginTop: 4,
@@ -158,7 +195,7 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
     fontSize: 14,
   };
 
-  const labelStyle = {
+  const labelStyle: React.CSSProperties = {
     fontSize: 13,
     fontWeight: 600,
     color: "#333",
@@ -181,29 +218,29 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
       <form onSubmit={handleSubmit}>
         <label style={labelStyle}>Nome</label>
         <input
-        name="name"
-            type="text"
-            value={form.name}
-            onChange={(e) => {
-                const value = e.target.value;
-                if (/^[a-zA-ZÀ-ÿ\s]*$/.test(value)) {
-                setForm((prev) => ({ ...prev, name: value }));
-                }
-            }}
-            required
-            placeholder="Seu nome completo"
-            style={{ ...inputStyle, marginBottom: 14 }}
+          name="name"
+          type="text"
+          value={form.name}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^[a-zA-ZÀ-ÿ\s]*$/.test(value)) {
+              setForm((prev) => ({ ...prev, name: value }));
+            }
+          }}
+          required
+          placeholder="Seu nome completo"
+          style={{ ...inputStyle, marginBottom: 14 }}
         />
 
         <label style={labelStyle}>Data de nascimento</label>
         <input
-            name="birthday"
-            type="date"
-            value={form.birthday}
-            onChange={handleChange}
-            required
-            max={new Date().toISOString().split("T")[0]}
-            style={{ ...inputStyle, marginBottom: 14 }}
+          name="birthday"
+          type="date"
+          value={form.birthday}
+          onChange={handleChange}
+          required
+          max={new Date().toISOString().split("T")[0]}
+          style={{ ...inputStyle, marginBottom: 14 }}
         />
 
         <label style={labelStyle}>Gênero</label>
@@ -214,7 +251,9 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
           required
           style={{ ...inputStyle, marginBottom: 14 }}
         >
-          <option value="" disabled>Selecione...</option>
+          <option value="" disabled>
+            Selecione...
+          </option>
           <option value="Masculino">Masculino</option>
           <option value="Feminino">Feminino</option>
           <option value="Outro">Outro</option>
@@ -222,25 +261,41 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
 
         <label style={labelStyle}>E-mail</label>
         <input
-        name="email"
-        type="email"
-        value={form.email}
-        onChange={handleChange}
-        required
-        placeholder="seu@email.com"
-        style={{
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          placeholder="seu@email.com"
+          style={{
             ...inputStyle,
             marginBottom: 4,
-            borderColor: form.email.length > 0
-            ? isValidEmail(form.email) ? "#2e7d32" : "#d32f2f"
-            : "#ccc",
-        }}
+            borderColor:
+              form.email.length > 0
+                ? isValidEmail(form.email)
+                  ? "#2e7d32"
+                  : "#d32f2f"
+                : "#ccc",
+          }}
         />
         <div style={{ marginBottom: 14, marginTop: 4, paddingLeft: 2 }}>
-            <PasswordRule ok={form.email.includes("@")} text="Contém @." />
-            <PasswordRule ok={/^[a-zA-Z0-9._-]+@/.test(form.email)} text="Nome de usuário válido (letras, números, caracteres especiais)." />
-            <PasswordRule ok={/@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email)} text="Domínio válido (ex: gmail.com)." />
-            <PasswordRule ok={!form.email.startsWith(".") && !form.email.endsWith(".") && !form.email.includes("..")} text="Sem pontos consecutivos ou nas bordas." />
+          <PasswordRule ok={form.email.includes("@")} text="Contém @." />
+          <PasswordRule
+            ok={/^[a-zA-Z0-9._-]+@/.test(form.email)}
+            text="Nome de usuário válido (letras, números, caracteres especiais)."
+          />
+          <PasswordRule
+            ok={/@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email)}
+            text="Domínio válido (ex: gmail.com)."
+          />
+          <PasswordRule
+            ok={
+              !form.email.startsWith(".") &&
+              !form.email.endsWith(".") &&
+              !form.email.includes("..")
+            }
+            text="Sem pontos consecutivos ou nas bordas."
+          />
         </div>
 
         <label style={labelStyle}>Senha</label>
@@ -258,7 +313,10 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
         <div style={{ marginBottom: 14, marginTop: 4, paddingLeft: 2 }}>
           <PasswordRule ok={rules.length} text="Mínimo de 10 caracteres." />
           <PasswordRule ok={rules.upper} text="Pelo menos uma letra maiúscula." />
-          <PasswordRule ok={rules.special} text='Pelo menos um caractere especial (!@#$%...).' />
+          <PasswordRule
+            ok={rules.special}
+            text='Pelo menos um caractere especial (!@#$%...).'
+          />
           <PasswordRule ok={rules.number} text="Pelo menos um número." />
         </div>
 
@@ -273,7 +331,11 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
           style={{
             ...inputStyle,
             marginBottom: 4,
-            borderColor: passwordsDiffer ? "#d32f2f" : passwordsMatch ? "#2e7d32" : "#ccc",
+            borderColor: passwordsDiffer
+              ? "#d32f2f"
+              : passwordsMatch
+              ? "#2e7d32"
+              : "#ccc",
           }}
         />
         {passwordsDiffer && (
@@ -329,4 +391,6 @@ export default function SignUpPage({ onSignUp, onGoToLogin }) {
       {toast && <Toast message={toast} onClose={() => setToast(null)} />}
     </div>
   );
-}
+};
+
+export default SignUpPage;
