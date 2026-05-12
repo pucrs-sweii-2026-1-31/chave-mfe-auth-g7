@@ -2,7 +2,7 @@
 
 Microfrontend de autenticação do projeto **Chave**.
 
-Expõe o componente `LoginPage` via **Module Federation** para ser consumido pelo `chave-shell`. Construído com React + Vite.
+Expõe o componente `LoginPage` via **Module Federation** para ser consumido pelo `chave-shell`. Construído com React + Vite + **TypeScript**.
 
 ---
 
@@ -10,6 +10,7 @@ Expõe o componente `LoginPage` via **Module Federation** para ser consumido pel
 
 - React 18
 - Vite 5
+- **TypeScript 5**
 - `@originjs/vite-plugin-federation` — Module Federation
 - `@vitejs/plugin-react`
 
@@ -23,7 +24,7 @@ Este microfrontend atua como **remote**:
 |---|---|
 | Nome | `mfe_auth` |
 | Entry point | `http://localhost:4001/assets/remoteEntry.js` |
-| Expõe | `./LoginPage` → `src/pages/LoginPage.jsx` |
+| Expõe | `./LoginPage` → `src/pages/LoginPage.tsx` |
 | Shared | `react`, `react-dom` |
 
 ---
@@ -43,6 +44,19 @@ Este microfrontend atua como **remote**:
 | `npm run dev` | Inicia em modo desenvolvimento na porta 4001 |
 | `npm run build` | Gera o bundle em `dist/` |
 | `npm run preview` | Serve o build na porta 4001 |
+
+---
+
+## Estrutura de arquivos
+
+```
+src/
+├── main.tsx           # Entrypoint (TypeScript)
+├── vite-env.d.ts      # Type definitions para Vite
+└── pages/
+    ├── LoginPage.tsx  # Componente de login (TypeScript)
+    └── SignUpPage.tsx # Componente de signup (TypeScript)
+```
 
 ---
 
