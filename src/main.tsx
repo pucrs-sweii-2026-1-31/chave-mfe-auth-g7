@@ -4,22 +4,21 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 
 function App() {
-  const [page, setPage] = useState<"login" | "signup">("signup");
+  const [page, setPage] = useState<"login" | "signup">("login");
 
-  if (page === "login") {
+  if (page === "signup") {
     return (
-      <LoginPage onLogin={(data: any) => console.log("Logado:", data)} />
+      <SignUpPage
+        onSignUp={() => setPage("login")}
+        onGoToLogin={() => setPage("login")}
+      />
     );
   }
 
   return (
-    <SignUpPage
-      onSignUp={(data: any) => {
-          console.log("Cadastrado:", data);
-          setPage("login");
-        }
-      }
-      onGoToLogin={() => setPage("login")}
+    <LoginPage
+      onLogin={(data) => console.log("Logado:", data)}
+      onGoToSignUp={() => setPage("signup")}
     />
   );
 }
