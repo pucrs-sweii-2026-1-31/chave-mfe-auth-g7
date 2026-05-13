@@ -11,6 +11,7 @@ export default defineConfig({
       exposes: {
         "./LoginPage": "./src/pages/LoginPage.tsx",
         "./SignUpPage": "./src/pages/SignUpPage.tsx",
+        "./DashboardPage": "./src/pages/DashboardPage.tsx",
       },
       shared: ["react", "react-dom"],
     }),

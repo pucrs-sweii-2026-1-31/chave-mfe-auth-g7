@@ -2,24 +2,32 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
+import DashboardPage from "./pages/DashboardPage";
+
+type View = "login" | "signup" | "dashboard";
 
 function App() {
-  const [page, setPage] = useState<"login" | "signup">("signup");
+  const [view, setView] = useState<View>(() =>
+    localStorage.getItem("token") ? "dashboard" : "login"
+  );
 
-  if (page === "login") {
+  if (view === "signup") {
     return (
-      <LoginPage onLogin={(data: any) => console.log("Logado:", data)} />
+      <SignUpPage
+        onSignUp={() => setView("login")}
+        onGoToLogin={() => setView("login")}
+      />
     );
   }
 
+  if (view === "dashboard") {
+    return <DashboardPage onLogout={() => setView("login")} />;
+  }
+
   return (
-    <SignUpPage
-      onSignUp={(data: any) => {
-          console.log("Cadastrado:", data);
-          setPage("login");
-        }
-      }
-      onGoToLogin={() => setPage("login")}
+    <LoginPage
+      onLogin={() => setView("dashboard")}
+      onGoToSignUp={() => setView("signup")}
     />
   );
 }
