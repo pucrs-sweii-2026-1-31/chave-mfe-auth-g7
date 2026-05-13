@@ -1,5 +1,3 @@
-// Trigger CI test
-
 import { FC, FormEvent, useState } from "react";
 import {
   Alert,
