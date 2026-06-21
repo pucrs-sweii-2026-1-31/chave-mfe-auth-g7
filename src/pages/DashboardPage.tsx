@@ -48,6 +48,7 @@ interface User {
 
 interface DashboardPageProps {
   onLogout?: () => void;
+  onHome?: () => void;
 }
 
 const isAdminUser = (user: User): boolean => user.roles.some((r) => r.idRole === 2);
@@ -74,7 +75,7 @@ const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
 });
 
-const DashboardPage: FC<DashboardPageProps> = ({ onLogout }) => {
+const DashboardPage: FC<DashboardPageProps> = ({ onLogout, onHome }) => {
   const [me, setMe] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [loadingPage, setLoadingPage] = useState(true);
@@ -196,7 +197,15 @@ const DashboardPage: FC<DashboardPageProps> = ({ onLogout }) => {
         sx={{ background: "linear-gradient(90deg, #1565c0 0%, #0d47a1 100%)" }}
       >
         <Toolbar>
-          <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            fontWeight={700}
+            onClick={() => {
+              if (onHome) onHome();
+              else window.location.href = "/";
+            }}
+            sx={{ flexGrow: 1, cursor: "pointer" }}
+          >
             Chave
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
